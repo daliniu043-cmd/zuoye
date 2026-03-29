@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}游戏推荐{% endblock %}
+{% block content %}
+<div class="pagetitle"><h1>游戏推荐</h1><nav><ol class="breadcrumb"><li class="breadcrumb-item"><a href="{% url 'home' %}">首页</a></li><li class="breadcrumb-item active">游戏推荐</li></ol></nav></div>
+<section class="section"><div class="row">
+{% for game in recommendations %}<div class="col-lg-3 col-md-4 col-sm-6 mb-3"><div class="card h-100"><div class="card-body">
+<h6><a href="{% url 'game_detail' game.id %}">{{ game.name|truncatechars:22 }}</a></h6>
+<p class="text-muted mb-1" style="font-size:12px;">{{ game.platform }} | {{ game.genre }}</p>
+<p class="mb-1" style="font-size:13px;"><i class="bi bi-globe"></i> {{ game.global_sales }}M</p>
+{% if game.score %}<p class="mb-0" style="font-size:13px;"><i class="bi bi-star-fill text-warning"></i> {{ game.score }}</p>{% endif %}
+<span class="badge bg-light text-dark mt-1" style="font-size:10px;">{{ game.recommendation_type }}</span>
+</div></div></div>{% empty %}<div class="col-12 text-center py-5"><p class="text-muted">收藏一些游戏后即可获得个性化推荐</p></div>{% endfor %}
+</div></section>
+{% endblock %}
+{% block active_menu %}game_recommendations{% endblock %}

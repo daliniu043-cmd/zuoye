@@ -1,0 +1,294 @@
+{% extends 'base.html' %}
+{% load app_filters %}
+
+{% block title %}游戏销售数据分析{% endblock %}
+
+{% block content %}
+<div class="pagetitle">
+    <h1>游戏销售数据可视化分析</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">首页</a></li>
+            <li class="breadcrumb-item active">销售数据分析</li>
+        </ol>
+    </nav>
+</div>
+
+<section class="section">
+    <!-- 地区销量总览卡片 -->
+    <div class="row">
+        <div class="col-lg-3 col-md-6">
+            <div class="card info-card sales-card">
+                <div class="card-body">
+                    <h5 class="card-title">全球总销量</h5>
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background:#e0f7fa;">
+                            <i class="bi bi-globe2" style="color:#00bcd4;font-size:24px;"></i>
+                        </div>
+                        <div class="ps-3">
+                            <h6 id="stat-global">-</h6>
+                            <span class="text-muted small">百万份</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card info-card revenue-card">
+                <div class="card-body">
+                    <h5 class="card-title">北美地区销量</h5>
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background:#e8f5e9;">
+                            <i class="bi bi-flag" style="color:#4caf50;font-size:24px;"></i>
+                        </div>
+                        <div class="ps-3">
+                            <h6 id="stat-na">-</h6>
+                            <span class="text-muted small">百万份</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card info-card customers-card">
+                <div class="card-body">
+                    <h5 class="card-title">欧洲地区销量</h5>
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background:#fff3e0;">
+                            <i class="bi bi-globe-europe-africa" style="color:#ff9800;font-size:24px;"></i>
+                        </div>
+                        <div class="ps-3">
+                            <h6 id="stat-eu">-</h6>
+                            <span class="text-muted small">百万份</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card info-card">
+                <div class="card-body">
+                    <h5 class="card-title">日本地区销量</h5>
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background:#fce4ec;">
+                            <i class="bi bi-globe-asia-australia" style="color:#e91e63;font-size:24px;"></i>
+                        </div>
+                        <div class="ps-3">
+                            <h6 id="stat-jp">-</h6>
+                            <span class="text-muted small">百万份</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第一行图表：地区销量占比 + 年度销量趋势 -->
+    <div class="row">
+        <div class="col-lg-5">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">各地区销量占比</h5>
+                    <div id="regionPieChart" style="height:380px;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-7">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">年度销量趋势</h5>
+                    <div id="yearlyTrendChart" style="height:380px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第二行图表：平台销量排名 + 类型销量分布 -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">平台销量排名 Top15</h5>
+                    <div id="platformSalesChart" style="height:420px;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">游戏类型销量分布</h5>
+                    <div id="genreSalesChart" style="height:420px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第三行：发行商销量 Top20 -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">发行商销量排名 Top20</h5>
+                    <div id="publisherSalesChart" style="height:450px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第四行：类型-地区堆叠 + 销量Top20游戏 -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">各类型地区销量对比</h5>
+                    <div id="genreRegionChart" style="height:420px;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">全球销量 Top20 游戏</h5>
+                    <div style="max-height:420px;overflow-y:auto;">
+                        <table class="table table-hover table-sm" id="topGamesTable">
+                            <thead class="table-light sticky-top">
+                                <tr>
+                                    <th>#</th><th>游戏</th><th>平台</th><th>类型</th>
+                                    <th>全球销量</th><th>评分</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ECharts -->
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var salesData = JSON.parse('{{ sales_data|escapejs }}');
+    if (!salesData || !salesData.region_totals) return;
+
+    var rt = salesData.region_totals;
+    document.getElementById('stat-global').textContent = (rt.total || 0).toLocaleString();
+    document.getElementById('stat-na').textContent = (rt.na || 0).toLocaleString();
+    document.getElementById('stat-eu').textContent = (rt.eu || 0).toLocaleString();
+    document.getElementById('stat-jp').textContent = (rt.jp || 0).toLocaleString();
+
+    // 地区饼图
+    var pie = echarts.init(document.getElementById('regionPieChart'));
+    pie.setOption({
+        tooltip: {trigger:'item', formatter:'{b}: {c} 百万份 ({d}%)'},
+        legend: {bottom:0},
+        series: [{
+            type:'pie', radius:['40%','70%'], center:['50%','45%'],
+            itemStyle:{borderRadius:8},
+            label:{show:true, formatter:'{b}\n{d}%'},
+            data: [
+                {value: rt.na, name:'北美', itemStyle:{color:'#5470c6'}},
+                {value: rt.eu, name:'欧洲', itemStyle:{color:'#91cc75'}},
+                {value: rt.jp, name:'日本', itemStyle:{color:'#ee6666'}},
+                {value: rt.other, name:'其他', itemStyle:{color:'#fac858'}},
+            ]
+        }]
+    });
+
+    // 年度趋势
+    var yt = salesData.yearly_trend || [];
+    var yearLine = echarts.init(document.getElementById('yearlyTrendChart'));
+    yearLine.setOption({
+        tooltip: {trigger:'axis'},
+        legend: {data:['总销量','游戏数量'], bottom:0},
+        grid: {left:'8%',right:'8%',top:'10%',bottom:'15%'},
+        xAxis: {type:'category', data: yt.map(function(d){return d.release_year}), axisLabel:{rotate:45}},
+        yAxis: [
+            {type:'value', name:'销量(百万份)', position:'left'},
+            {type:'value', name:'游戏数量', position:'right'}
+        ],
+        series: [
+            {name:'总销量', type:'bar', data: yt.map(function(d){return Math.round((d.total_sales||0)*100)/100}), itemStyle:{color:'#5470c6'}},
+            {name:'游戏数量', type:'line', yAxisIndex:1, data: yt.map(function(d){return d.game_count}), itemStyle:{color:'#ee6666'}, smooth:true}
+        ]
+    });
+
+    // 平台销量
+    var ps = salesData.platform_sales || [];
+    var platBar = echarts.init(document.getElementById('platformSalesChart'));
+    platBar.setOption({
+        tooltip: {trigger:'axis'},
+        grid: {left:'15%',right:'5%',top:'5%',bottom:'5%'},
+        xAxis: {type:'value', name:'销量(百万份)'},
+        yAxis: {type:'category', data: ps.map(function(d){return d.platform}).reverse(), axisLabel:{fontSize:11}},
+        series: [{type:'bar', data: ps.map(function(d){return Math.round((d.total_sales||0)*100)/100}).reverse(),
+            itemStyle:{color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#5470c6'},{offset:1,color:'#91cc75'}])}}]
+    });
+
+    // 类型销量
+    var gs = salesData.genre_sales || [];
+    var genreBar = echarts.init(document.getElementById('genreSalesChart'));
+    genreBar.setOption({
+        tooltip: {trigger:'axis'},
+        grid: {left:'15%',right:'5%',top:'5%',bottom:'5%'},
+        xAxis: {type:'value', name:'销量(百万份)'},
+        yAxis: {type:'category', data: gs.map(function(d){return d.genre}).reverse()},
+        series: [{type:'bar', data: gs.map(function(d){return Math.round((d.total_sales||0)*100)/100}).reverse(),
+            itemStyle:{color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#ee6666'},{offset:1,color:'#fac858'}])}}]
+    });
+
+    // 发行商销量
+    var pubs = salesData.publisher_sales || [];
+    var pubBar = echarts.init(document.getElementById('publisherSalesChart'));
+    pubBar.setOption({
+        tooltip: {trigger:'axis', axisPointer:{type:'shadow'}},
+        grid: {left:'5%',right:'3%',top:'5%',bottom:'20%'},
+        xAxis: {type:'category', data: pubs.map(function(d){return d.publisher.substring(0,15)}), axisLabel:{rotate:45,fontSize:10}},
+        yAxis: {type:'value', name:'销量(百万份)'},
+        series: [{type:'bar', data: pubs.map(function(d){return Math.round((d.total_sales||0)*100)/100}),
+            itemStyle:{color:function(p){var colors=['#5470c6','#91cc75','#fac858','#ee6666','#73c0de','#3ba272','#fc8452','#9a60b4','#ea7ccc'];return colors[p.dataIndex%colors.length]}}}]
+    });
+
+    // 类型-地区堆叠
+    var gr = salesData.genre_region || {};
+    var grGenres = Object.keys(gr);
+    var grChart = echarts.init(document.getElementById('genreRegionChart'));
+    grChart.setOption({
+        tooltip: {trigger:'axis', axisPointer:{type:'shadow'}},
+        legend: {data:['北美','欧洲','日本','其他'], bottom:0},
+        grid: {left:'12%',right:'3%',top:'5%',bottom:'15%'},
+        xAxis: {type:'value', max:100, axisLabel:{formatter:'{value}%'}},
+        yAxis: {type:'category', data: grGenres.reverse()},
+        series: [
+            {name:'北美', type:'bar', stack:'total', data: grGenres.map(function(g){return gr[g].na_pct}), itemStyle:{color:'#5470c6'}},
+            {name:'欧洲', type:'bar', stack:'total', data: grGenres.map(function(g){return gr[g].eu_pct}), itemStyle:{color:'#91cc75'}},
+            {name:'日本', type:'bar', stack:'total', data: grGenres.map(function(g){return gr[g].jp_pct}), itemStyle:{color:'#ee6666'}},
+            {name:'其他', type:'bar', stack:'total', data: grGenres.map(function(g){return gr[g].other_pct}), itemStyle:{color:'#fac858'}},
+        ]
+    });
+
+    // Top20游戏表格
+    var tg = salesData.top_games || [];
+    var tbody = document.querySelector('#topGamesTable tbody');
+    tg.forEach(function(g, i){
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td><span class="badge bg-'+(i<3?'warning':'secondary')+'">'+(i+1)+'</span></td>'
+            +'<td><a href="/app/game-detail/'+g.id+'/">'+g.name+'</a></td>'
+            +'<td><span class="badge bg-info">'+g.platform+'</span></td>'
+            +'<td>'+g.genre+'</td>'
+            +'<td><strong>'+g.global_sales+'</strong> 百万</td>'
+            +'<td>'+(g.score||'-')+'</td>';
+        tbody.appendChild(tr);
+    });
+
+    // 响应式
+    window.addEventListener('resize', function(){
+        pie.resize(); yearLine.resize(); platBar.resize();
+        genreBar.resize(); pubBar.resize(); grChart.resize();
+    });
+});
+</script>
+{% endblock %}
+{% block active_menu %}sales_analysis{% endblock %}

@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% load app_filters %}
+
+{% block title %}游戏销售数据可视化分析系统{% endblock %}
+
+{% block content %}
+<style>
+.equal-height-row { display:flex; flex-wrap:wrap; }
+.equal-height-row > [class*="col-"] { display:flex; flex-direction:column; }
+.equal-height-row .card { flex:1; display:flex; flex-direction:column; }
+.equal-height-row .card-body { flex:1; display:flex; flex-direction:column; }
+.info-card { min-height:120px; }
+.info-card .card-body { display:flex; flex-direction:column; justify-content:center; }
+.activity { padding-right:10px; }
+.activity .recommend-item { display:flex; align-items:flex-start; padding:15px; margin-bottom:15px; border-radius:8px; background:#f8f9fa; transition:all 0.3s; border-left:4px solid transparent; position:relative; }
+.activity .recommend-item:hover { background:#e9ecef; border-left-color:#28a745; transform:translateX(5px); box-shadow:0 4px 12px rgba(0,0,0,0.1); }
+.activity .recommend-item .video-content { flex:1; min-width:0; }
+.activity .recommend-item .video-title { font-size:15px; font-weight:600; margin:0 0 8px 0; line-height:1.4; color:#2c3e50; }
+.activity .recommend-item .video-title a { color:inherit; text-decoration:none; }
+.activity .recommend-item .video-title a:hover { color:#28a745; }
+.activity .recommend-item .video-meta { display:flex; align-items:center; gap:15px; font-size:12px; color:#6c757d; }
+.activity .recommend-item .video-stats { display:flex; align-items:center; gap:12px; font-size:11px; color:#8e9aaf; margin-top:6px; }
+.activity .recommend-item .video-stats .stat-item { display:flex; align-items:center; gap:3px; padding:2px 6px; background:rgba(40,167,69,0.1); border-radius:12px; color:#28a745; font-weight:500; }
+.activity .recommend-item .rank-badge { position:absolute; top:-5px; left:-5px; width:24px; height:24px; background:linear-gradient(45deg,#ff6b35,#f7931e); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:bold; box-shadow:0 2px 6px rgba(0,0,0,0.2); }
+.activity .recommend-item:nth-child(1) .rank-badge { background:linear-gradient(45deg,#ffd700,#ffed4e); color:#333; }
+.activity .recommend-item:nth-child(2) .rank-badge { background:linear-gradient(45deg,#c0c0c0,#e5e5e5); color:#333; }
+.activity .recommend-item:nth-child(3) .rank-badge { background:linear-gradient(45deg,#cd7f32,#daa520); color:#fff; }
+.news .post-item { display:flex; align-items:flex-start; padding:15px; margin-bottom:15px; border-radius:8px; background:#f8f9fa; transition:all 0.3s; border-left:4px solid transparent; }
+.news .post-item:hover { background:#e9ecef; border-left-color:#4154f1; transform:translateX(5px); }
+.news .post-item .video-content { flex:1; min-width:0; }
+.news .post-item .video-title { font-size:14px; font-weight:600; margin:0 0 8px 0; }
+.news .post-item .video-title a { color:inherit; text-decoration:none; }
+.news .post-item .video-meta { display:flex; align-items:center; gap:12px; font-size:11px; color:#8e9aaf; }
+</style>
+
+<div class="pagetitle" style="display:flex;align-items:center">
+    <div style="margin-right:auto">
+        <h1>游戏销售数据可视化分析系统</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}">首页</a></li>
+                <li class="breadcrumb-item active">数据概览</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="section dashboard">
+    <div class="row">
+        <div class="row equal-height-row">
+            <div class="col-xxl-3 col-md-6">
+                <div class="card info-card sales-card">
+                    <div class="card-body">
+                        <h5 class="card-title">游戏总数 <span>| 数据集</span></h5>
+                        <div class="d-flex align-items-center">
+                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                <i class="bi bi-controller"></i>
+                            </div>
+                            <div class="ps-3">
+                                <h6>{{ basic_stats.total_games|default:0 }}</h6>
+                                <span class="text-muted small">款游戏</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xxl-3 col-md-6">
+                <div class="card info-card revenue-card">
+                    <div class="card-body">
+                        <h5 class="card-title">评论总数 <span>| 全部</span></h5>
+                        <div class="d-flex align-items-center">
+                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                <i class="bi bi-chat-left-text"></i>
+                            </div>
+                            <div class="ps-3">
+                                <h6>{{ basic_stats.total_comments|default:0 }}</h6>
+                                <span class="text-muted small">条评论</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xxl-3 col-md-6">
+                <div class="card info-card customers-card">
+                    <div class="card-body">
+                        <h5 class="card-title">全球总销量 <span>| 累计</span></h5>
+                        <div class="d-flex align-items-center">
+                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                <i class="bi bi-graph-up-arrow"></i>
+                            </div>
+                            <div class="ps-3">
+                                <h6>{{ basic_stats.total_global_sales|default:0 }}</h6>
+                                <span class="text-muted small">百万份</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xxl-3 col-md-6">
+                <div class="card info-card revenue-card">
+                    <div class="card-body">
+                        <h5 class="card-title">平均评分 <span>| 全部</span></h5>
+                        <div class="d-flex align-items-center">
+                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                <i class="bi bi-star-fill"></i>
+                            </div>
+                            <div class="ps-3">
+                                <h6>{{ basic_stats.avg_score|default:0 }}</h6>
+                                <span class="text-muted small">满分10分</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row equal-height-row">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-fire text-danger me-2"></i>销量排行榜</h5>
+                        <div class="activity">
+                            {% for game in top_games %}
+                            <div class="recommend-item">
+                                <div class="rank-badge">{{ forloop.counter }}</div>
+                                <div class="video-content" style="margin-left:20px;">
+                                    <h4 class="video-title">
+                                        <a href="{% url 'game_detail' game.id %}">{{ game.name|truncatechars:35 }}</a>
+                                    </h4>
+                                    <div class="video-meta">
+                                        <span><i class="bi bi-building"></i> {{ game.publisher|default:"未知"|truncatechars:15 }}</span>
+                                        <span><i class="bi bi-tag"></i> {{ game.genre|default:"未知" }}</span>
+                                        <span><i class="bi bi-display"></i> {{ game.platform }}</span>
+                                    </div>
+                                    <div class="video-stats">
+                                        <div class="stat-item"><i class="bi bi-graph-up"></i> {{ game.global_sales }} 百万份</div>
+                                        {% if game.score %}<div class="stat-item"><i class="bi bi-star-fill"></i> {{ game.score }}</div>{% endif %}
+                                        {% if game.release_year %}<div class="stat-item"><i class="bi bi-calendar"></i> {{ game.release_year }}</div>{% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="text-center text-muted py-4"><i class="bi bi-controller" style="font-size:48px;"></i><p>暂无游戏数据</p></div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-clock-history text-primary me-2"></i>最新动态</h5>
+                        <div class="news">
+                            {% for game in recent_games %}
+                            <div class="post-item">
+                                <div class="video-content">
+                                    <h4 class="video-title">
+                                        <a href="{% url 'game_detail' game.id %}">{{ game.name|truncatechars:30 }}</a>
+                                    </h4>
+                                    <div class="video-meta">
+                                        <span><i class="bi bi-calendar"></i> {{ game.create_time|date:"m-d H:i" }}</span>
+                                        <span><i class="bi bi-graph-up"></i> {{ game.global_sales }} 百万</span>
+                                        <span><i class="bi bi-building"></i> {{ game.publisher|truncatechars:12 }}</span>
+                                        <span><i class="bi bi-tag"></i> {{ game.genre }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="text-center text-muted py-4"><p>暂无最新数据</p></div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+{% block active_menu %}home{% endblock %}

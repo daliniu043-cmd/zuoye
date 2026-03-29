@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load app_filters %}
+{% block title %}词云分析{% endblock %}
+{% block content %}
+<div class="pagetitle"><h1>词云分析</h1><nav><ol class="breadcrumb"><li class="breadcrumb-item"><a href="{% url 'home' %}">首页</a></li><li class="breadcrumb-item active">词云分析</li></ol></nav></div>
+<section class="section"><div class="card"><div class="card-body">
+<h5 class="card-title">选择词云类型</h5>
+<div class="btn-group mb-3">
+<a href="?type=name" class="btn {% if text_type == 'name' %}btn-primary{% else %}btn-outline-primary{% endif %}">游戏名称</a>
+<a href="?type=genre" class="btn {% if text_type == 'genre' %}btn-primary{% else %}btn-outline-primary{% endif %}">游戏类型</a>
+<a href="?type=publisher" class="btn {% if text_type == 'publisher' %}btn-primary{% else %}btn-outline-primary{% endif %}">发行商</a>
+<a href="?type=platform" class="btn {% if text_type == 'platform' %}btn-primary{% else %}btn-outline-primary{% endif %}">平台</a>
+<a href="?type=comment" class="btn {% if text_type == 'comment' %}btn-primary{% else %}btn-outline-primary{% endif %}">评论内容</a>
+</div>
+<div id="wordCloudChart" style="height: 500px;"></div>
+</div></div></section>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts-wordcloud@2/dist/echarts-wordcloud.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    var wordData = {{ word_data|safe }};
+    if(!wordData || !wordData.length) return;
+    var chart = echarts.init(document.getElementById('wordCloudChart'));
+    chart.setOption({series:[{type:'wordCloud',shape:'circle',left:'center',top:'center',width:'90%',height:'90%',sizeRange:[14,60],rotationRange:[-45,45],gridSize:8,textStyle:{fontFamily:'sans-serif',fontWeight:'bold',color:function(){return 'rgb('+[Math.round(Math.random()*160),Math.round(Math.random()*160),Math.round(Math.random()*160)].join(',')+')';}},data:wordData}]});
+    window.addEventListener('resize', function(){ chart.resize(); });
+});
+</script>
+{% endblock %}
+{% block active_menu %}word_cloud{% endblock %}

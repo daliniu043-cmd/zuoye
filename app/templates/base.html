@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>{% block title %}游戏销售数据的数据可视化分析系统{% endblock %}</title>
+
+  <!-- Favicons -->
+  <link href="/static/img/favicon.png" rel="icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files (CDN) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="/static/css/style.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <!-- ======= Header ======= -->
+  <header id="header" class="header fixed-top d-flex align-items-center">
+    <div class="d-flex align-items-center justify-content-between">
+      <a href="{% url 'home' %}" class="logo d-flex align-items-center">
+        <i class="bi bi-bar-chart-line" style="font-size: 24px; margin-right: 8px; color: #4154f1;"></i>
+        <span class="d-none d-lg-block">游戏销售数据可视化分析系统</span>
+      </a>
+      <i class="bi bi-list toggle-sidebar-btn"></i>
+    </div>
+
+    <nav class="header-nav ms-auto">
+      <ul class="d-flex align-items-center">
+        <li class="nav-item dropdown pe-3">
+          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+            {% if userInfo and userInfo.avatar %}
+            <img src="/media/{{ userInfo.avatar }}" alt="Profile" class="rounded-circle" style="width:30px;height:30px;object-fit:cover;">
+            {% else %}
+            <img src="/static/img/default-avatar.png" alt="Profile" class="rounded-circle" style="width:30px;height:30px;">
+            {% endif %}
+            <span class="d-none d-md-block dropdown-toggle ps-2">{{ userInfo.username|default:"用户" }}</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+            <li class="dropdown-header">
+              <h6>{{ userInfo.username|default:"用户" }}</h6>
+              <span>{{ userInfo.textarea|default:"" }}</span>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item d-flex align-items-center" href="{% url 'changeSelfInfo' %}"><i class="bi bi-person"></i><span>个人信息</span></a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item d-flex align-items-center" href="{% url 'changePassword' %}"><i class="bi bi-gear"></i><span>修改密码</span></a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item d-flex align-items-center" href="{% url 'logOut' %}"><i class="bi bi-box-arrow-right"></i><span>退出登录</span></a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- ======= Sidebar ======= -->
+  <aside id="sidebar" class="sidebar">
+    <ul class="sidebar-nav" id="sidebar-nav">
+
+      <!-- 【置顶】销售数据分析 -->
+      <li class="nav-item">
+        <a class="nav-link {% if active_menu != 'sales_analysis' %}collapsed{% endif %}" href="{% url 'sales_analysis' %}">
+          <i class="bi bi-graph-up-arrow"></i>
+          <span>销售数据分析</span>
+          <span class="badge bg-danger rounded-pill ms-auto">核心</span>
+        </a>
+      </li>
+
+      <li class="nav-heading">概览</li>
+
+      <li class="nav-item">
+        <a class="nav-link {% if active_menu != 'home' %}collapsed{% endif %}" href="{% url 'home' %}">
+          <i class="bi bi-grid"></i>
+          <span>数据概览</span>
+        </a>
+      </li>
+
+      <li class="nav-heading">数据管理</li>
+
+      <li class="nav-item">
+        <a class="nav-link {% if active_menu != 'game_data' %}collapsed{% endif %}" href="{% url 'game_data' %}">
+          <i class="bi bi-controller"></i>
+          <span>游戏数据</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link {% if active_menu != 'comment_data' %}collapsed{% endif %}" href="{% url 'comment_data' %}">
+          <i class="bi bi-chat-left-text"></i>
+          <span>评论数据</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link {% if active_menu != 'game_favorites' %}collapsed{% endif %}" href="{% url 'game_favorites' %}">
+          <i class="bi bi-star"></i>
+          <span>我的收藏</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link {% if active_menu != 'game_recommendations' %}collapsed{% endif %}" href="{% url 'game_recommendations' %}">
+          <i class="bi bi-lightbulb"></i>
+          <span>游戏推荐</span>
+        </a>
+      </li>
+
+      <li class="nav-heading">可视化分析</li>
+
+      <li class="nav-item">
+        <a class="nav-link {% if active_menu != 'genre_analysis' %}collapsed{% endif %}" href="{% url 'genre_analysis' %}">
+          <i class="bi bi-tags"></i>
+          <span>游戏类型分析</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link {% if active_menu != 'publisher_analysis' %}collapsed{% endif %}" href="{% url 'publisher_analysis' %}">
+          <i class="bi bi-building"></i>
+          <span>发行商分析</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link {% if active_menu != 'platform_analysis' %}collapsed{% endif %}" href="{% url 'platform_analysis' %}">
+          <i class="bi bi-display"></i>
+          <span>平台分析</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link {% if active_menu != 'yearly_analysis' %}collapsed{% endif %}" href="{% url 'yearly_analysis' %}">
+          <i class="bi bi-calendar3"></i>
+          <span>发行年份分析</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link {% if active_menu != 'score_analysis' %}collapsed{% endif %}" href="{% url 'score_analysis' %}">
+          <i class="bi bi-star-half"></i>
+          <span>评分分析</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link {% if active_menu != 'country_analysis' %}collapsed{% endif %}" href="{% url 'country_analysis' %}">
+          <i class="bi bi-globe2"></i>
+          <span>发行商国家分析</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link {% if active_menu != 'award_analysis' %}collapsed{% endif %}" href="{% url 'award_analysis' %}">
+          <i class="bi bi-trophy"></i>
+          <span>获奖分析</span>
+        </a>
+      </li>
+
+      <li class="nav-heading">文本分析</li>
+
+      <li class="nav-item">
+        <a class="nav-link {% if active_menu != 'word_cloud' %}collapsed{% endif %}" href="{% url 'word_cloud' %}">
+          <i class="bi bi-cloud"></i>
+          <span>词云分析</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link {% if active_menu != 'sentiment_trend_analysis' %}collapsed{% endif %}" href="{% url 'sentiment_trend_analysis' %}">
+          <i class="bi bi-emoji-smile"></i>
+          <span>情感趋势分析</span>
+        </a>
+      </li>
+
+      <li class="nav-heading">个人设置</li>
+
+      <li class="nav-item">
+        <a class="nav-link {% if active_menu != 'changeSelfInfo' %}collapsed{% endif %}" href="{% url 'changeSelfInfo' %}">
+          <i class="bi bi-person"></i>
+          <span>个人信息</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link {% if active_menu != 'changePassword' %}collapsed{% endif %}" href="{% url 'changePassword' %}">
+          <i class="bi bi-gear"></i>
+          <span>修改密码</span>
+        </a>
+      </li>
+
+    </ul>
+  </aside>
+  <!-- End Sidebar -->
+
+  <main id="main" class="main">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer id="footer" class="footer">
+    <div class="copyright">
+      &copy; 2025 <strong>游戏销售数据的数据可视化分析系统</strong>
+    </div>
+  </footer>
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.45.1/dist/apexcharts.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+
+  <!-- Template Main JS File -->
+  <script src="/static/js/main.js"></script>
+
+</body>
+</html>

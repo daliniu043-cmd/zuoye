@@ -1,0 +1,187 @@
+/* NiceAdmin-compatible Styles for Game Sales Analysis System */
+:root {
+  scroll-behavior: smooth;
+  --primary: #4154f1;
+  --secondary: #012970;
+}
+
+body {
+  font-family: "Open Sans", sans-serif;
+  background: #f6f9ff;
+  color: #444;
+}
+
+a { color: #4154f1; text-decoration: none; }
+a:hover { color: #717ff5; text-decoration: none; }
+
+/* Header */
+.header {
+  transition: all 0.5s;
+  z-index: 997;
+  height: 60px;
+  box-shadow: 0px 2px 20px rgba(1, 41, 112, 0.1);
+  background-color: #fff;
+  padding-left: 20px;
+}
+.header .logo { line-height: 1; }
+.header .logo span { font-size: 26px; font-weight: 700; color: #012970; font-family: "Nunito", sans-serif; }
+.header .toggle-sidebar-btn { font-size: 32px; padding-left: 10px; cursor: pointer; color: #012970; }
+
+.header-nav .nav-profile img { max-height: 36px; }
+.header-nav .nav-profile span { font-size: 14px; font-weight: 600; }
+
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  bottom: 0;
+  width: 300px;
+  z-index: 996;
+  transition: all 0.3s;
+  padding: 20px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #aab7cf transparent;
+  box-shadow: 0px 0px 20px rgba(1, 41, 112, 0.1);
+  background-color: #fff;
+}
+
+.sidebar-nav { padding: 0; margin: 0; list-style: none; }
+.sidebar-nav li { padding: 0; margin: 0; list-style: none; }
+
+.sidebar-nav .nav-item { margin-bottom: 5px; }
+
+.sidebar-nav .nav-heading {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #899bbd;
+  font-weight: 600;
+  margin: 10px 0 5px 15px;
+}
+
+.sidebar-nav .nav-link {
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+  font-weight: 600;
+  color: #4154f1;
+  transition: 0.3s;
+  background: #f6f9ff;
+  padding: 10px 15px;
+  border-radius: 4px;
+}
+
+.sidebar-nav .nav-link i {
+  font-size: 16px;
+  margin-right: 10px;
+  color: #4154f1;
+}
+
+.sidebar-nav .nav-link.collapsed {
+  color: #012970;
+  background: #fff;
+}
+
+.sidebar-nav .nav-link.collapsed i { color: #899bbd; }
+
+.sidebar-nav .nav-link:hover {
+  color: #4154f1;
+  background: #f6f9ff;
+}
+
+.sidebar-nav .nav-link .badge {
+  font-size: 10px;
+  font-weight: 600;
+}
+
+/* Main */
+#main {
+  margin-top: 60px;
+  padding: 20px 30px;
+  transition: all 0.3s;
+}
+
+@media (min-width: 1200px) {
+  #main, #footer { margin-left: 300px; }
+}
+
+/* Toggle sidebar */
+.toggle-sidebar .sidebar { left: -300px; }
+.toggle-sidebar #main,
+.toggle-sidebar #footer { margin-left: 0; }
+
+/* Footer */
+#footer {
+  padding: 20px 0;
+  font-size: 14px;
+  transition: all 0.3s;
+  border-top: 1px solid #cddfff;
+}
+#footer .copyright { text-align: center; color: #012970; }
+
+/* Cards */
+.card {
+  margin-bottom: 30px;
+  border: none;
+  border-radius: 5px;
+  box-shadow: 0px 0 30px rgba(1, 41, 112, 0.1);
+}
+.card-header, .card-footer { border: 0; background-color: #fff; padding: 15px 20px; }
+.card-title { padding: 20px 0 15px 0; font-size: 18px; font-weight: 500; color: #012970; font-family: "Poppins", sans-serif; }
+.card-body { padding: 0 20px 20px 20px; }
+
+/* Dashboard Cards */
+.dashboard .info-card {
+  padding-bottom: 10px;
+}
+.dashboard .info-card h6 {
+  font-size: 28px;
+  color: #012970;
+  font-weight: 700;
+  margin: 0;
+  padding: 0;
+}
+
+/* Back to top */
+.back-to-top {
+  position: fixed;
+  visibility: hidden;
+  opacity: 0;
+  right: 15px;
+  bottom: 15px;
+  z-index: 99999;
+  background: #4154f1;
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  transition: all 0.4s;
+}
+.back-to-top i { font-size: 24px; color: #fff; line-height: 0; }
+
+/* Page Title */
+.pagetitle { margin-bottom: 10px; }
+.pagetitle h1 { font-size: 24px; margin-bottom: 0; font-weight: 600; color: #012970; }
+
+/* Tables */
+.table { color: #012970; }
+.table th { font-weight: 600; }
+
+/* Pagination */
+.pagination .page-link { color: #012970; }
+.pagination .page-item.active .page-link { background-color: #4154f1; border-color: #4154f1; }
+
+/* Dropdown */
+.dropdown-menu { border-radius: 4px; padding: 10px 0; box-shadow: 0px 0px 30px rgba(1, 41, 112, 0.1); }
+.dropdown-item { padding: 10px 15px; font-size: 14px; }
+.dropdown-item i { margin-right: 10px; font-size: 18px; }
+
+/* Profile */
+.profile .profile-card img { max-width: 120px; }
+
+/* Responsive */
+@media (max-width: 1199px) {
+  .sidebar { left: -300px; }
+  #main, #footer { margin-left: 0; }
+  .toggle-sidebar .sidebar { left: 0; }
+}

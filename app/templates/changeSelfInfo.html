@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    修改个人信息
+{% endblock %}
+
+{% block active_menu %}changeSelfInfo{% endblock %}
+
+{% block content %}
+    <div class="pagetitle" style="display: flex;align-items: center">
+        <div style="margin-right: auto">
+            <h1>个人信息</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'changeSelfInfo' %}">个人信息</a></li>
+                    <li class="breadcrumb-item active">修改个人信息页面</li>
+                </ol>
+            </nav>
+        </div>
+
+    </div><!-- End Page Title -->
+
+    <section class="section dashboard">
+        <div class="row">
+
+            <!-- Right side columns -->
+            <div class="col-lg-12">
+
+                <!-- Recent Activity -->
+                <div class="card">
+
+                    <div class="card-body">
+                        <h5 class="card-title">修改个人信息</h5>
+
+                        <style>
+                            .col-form-label {
+                                text-align: right;
+                            }
+                        </style>
+                        <form action="{% url 'changeSelfInfo' %}" method="post" enctype="multipart/form-data">
+
+                            <div class="activity">
+                                <div class="row mb-3" style="display: flex">
+                                    <label for="inputText" class="col-sm-1 col-form-label">用户名:</label>
+                                    <div class="col-sm-5">
+                                        <input type="text" name="username" disabled
+                                               value="{{ userInfo.username }}"
+                                               class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <label for="inputText" class="col-sm-1 col-form-label">地址:</label>
+                                    <div class="col-sm-5">
+                                        <input type="text" name="address" value="{{ userInfo.address }}"
+                                               class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <label for="inputText" class="col-sm-1 col-form-label">性别:</label>
+                                    <div class="col-sm-5">
+                                        <select class="form-select" name="sex" aria-label="Default select example">
+                                            <option {% if userInfo.sex == '' %} selected="selected" {% endif %}
+                                                                                value="">--请选择--
+                                            </option>
+                                            <option {% if userInfo.sex == '男' %} selected="selected" {% endif %}
+                                                                                  value="男">男
+                                            </option>
+                                            <option {% if userInfo.sex == '女' %} selected="selected" {% endif %}
+                                                                                  value="女">女
+                                            </option>
+                                        </select>
+
+                                    </div>
+                                </div>
+
+
+                                <div class="row mb-3">
+                                    <label for="inputText" class="col-sm-1 col-form-label">个人简介:</label>
+                                    <div class="col-sm-5">
+                                        <textarea class="form-control" name="textarea"
+                                                  style="height: 100px">{{ userInfo.textarea }}</textarea>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <label for="inputText" class="col-sm-1 col-form-label">头像上传:</label>
+                                    <div class="col-sm-5">
+                                        <img style="width:100px; border: 1px solid #ddd; padding: 5px;"
+                                             src="/media/{{ userInfo.avatar }}" alt="">
+                                        <br>
+                                        <input type="file" name="avatar">
+                                    </div>
+                                </div>
+
+
+                                <div class="row mb-3">
+                                    <label for="inputText" class="col-sm-1 col-form-label"></label>
+                                    <div class="col-sm-5">
+                                        <button type="submit" class="btn btn-primary">提交</button>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+                        </form>
+
+
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+    </section>
+{% endblock %}
+
+{% block echarts %}
+    <script>
+
+    </script>
+{% endblock %}
+

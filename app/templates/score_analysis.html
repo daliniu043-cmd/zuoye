@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load app_filters %}
+{% block title %}评分分析{% endblock %}
+{% block content %}
+<div class="pagetitle"><h1>游戏评分分析</h1><nav><ol class="breadcrumb"><li class="breadcrumb-item"><a href="{% url 'home' %}">首页</a></li><li class="breadcrumb-item active">评分分析</li></ol></nav></div>
+<section class="section">
+<div class="row">
+<div class="col-lg-5"><div class="card"><div class="card-body"><h5 class="card-title">评分区间分布</h5><div id="scoreDistChart" style="height: 380px;"></div></div></div></div>
+<div class="col-lg-7"><div class="card"><div class="card-body"><h5 class="card-title">媒体评价与平均销量</h5><div id="mediaChart" style="height: 380px;"></div></div></div></div>
+</div>
+<div class="row"><div class="col-lg-12"><div class="card"><div class="card-body"><h5 class="card-title">玩家口碑与平均销量</h5><div id="playerChart" style="height: 350px;"></div></div></div></div></div>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    var data = {{ score_data|safe }};
+    if(!data.score_ranges) return;
+    var c1 = echarts.init(document.getElementById('scoreDistChart'));
+    var sr = data.score_ranges;
+    c1.setOption({tooltip:{trigger:'item'},series:[{type:'pie',radius:['35%','65%'],data:Object.keys(sr).map(function(k){return{name:k,value:sr[k]};}),label:{formatter:'{b}\n{c}款'}}]});
+    window.addEventListener('resize',function(){c1.resize();});
+    var mv = data.media_vs_sales||[];
+    if(mv.length){var c2=echarts.init(document.getElementById('mediaChart'));c2.setOption({tooltip:{trigger:'axis'},grid:{left:'3%',right:'4%',bottom:'3%',containLabel:true},xAxis:{type:'category',data:mv.map(function(m){return m.media_review||'未知';})},yAxis:[{type:'value',name:'平均销量(百万)'},{type:'value',name:'游戏数量'}],series:[{type:'bar',data:mv.map(function(m){return (m.avg_sales||0).toFixed(2);}),itemStyle:{color:'#5470c6'}},{type:'bar',yAxisIndex:1,data:mv.map(function(m){return m.count||0;}),itemStyle:{color:'#91cc75'}}]});window.addEventListener('resize',function(){c2.resize();});}
+    var pv = data.player_vs_sales||[];
+    if(pv.length){var c3=echarts.init(document.getElementById('playerChart'));c3.setOption({tooltip:{trigger:'axis'},grid:{left:'3%',right:'4%',bottom:'3%',containLabel:true},xAxis:{type:'category',data:pv.map(function(p){return p.player_review||'未知';})},yAxis:[{type:'value',name:'平均销量'},{type:'value',name:'平均评分'}],series:[{type:'bar',data:pv.map(function(p){return (p.avg_sales||0).toFixed(2);}),itemStyle:{color:'#fac858'}},{type:'line',yAxisIndex:1,data:pv.map(function(p){return (p.avg_score||0).toFixed(1);}),itemStyle:{color:'#ee6666'}}]});window.addEventListener('resize',function(){c3.resize();});}
+});
+</script>
+{% endblock %}
+{% block active_menu %}score_analysis{% endblock %}

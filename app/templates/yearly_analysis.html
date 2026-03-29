@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load app_filters %}
+{% block title %}发行年份分析{% endblock %}
+{% block content %}
+<div class="pagetitle"><h1>发行年份分析</h1><nav><ol class="breadcrumb"><li class="breadcrumb-item"><a href="{% url 'home' %}">首页</a></li><li class="breadcrumb-item active">发行年份分析</li></ol></nav></div>
+<section class="section">
+<div class="row"><div class="col-lg-12"><div class="card"><div class="card-body"><h5 class="card-title">年度销量与游戏数量趋势</h5><div id="yearlyChart" style="height: 420px;"></div></div></div></div></div>
+<div class="row"><div class="col-lg-12"><div class="card"><div class="card-body"><h5 class="card-title">年度平均评分趋势</h5><div id="yearlyScoreChart" style="height: 350px;"></div></div></div></div></div>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    var data = {{ yearly_data|safe }};
+    if(!data.years) return;
+    var c1 = echarts.init(document.getElementById('yearlyChart'));
+    c1.setOption({tooltip:{trigger:'axis'},legend:{data:['总销量','游戏数量'],bottom:0},grid:{left:'3%',right:'4%',bottom:'12%',containLabel:true},xAxis:{type:'category',data:data.years,axisLabel:{rotate:45}},yAxis:[{type:'value',name:'销量(百万)'},{type:'value',name:'游戏数'}],series:[{name:'总销量',type:'line',smooth:true,data:data.total_sales,areaStyle:{opacity:0.3}},{name:'游戏数量',type:'bar',yAxisIndex:1,data:data.counts,itemStyle:{opacity:0.6}}]});
+    var c2 = echarts.init(document.getElementById('yearlyScoreChart'));
+    c2.setOption({tooltip:{trigger:'axis'},grid:{left:'3%',right:'4%',bottom:'12%',containLabel:true},xAxis:{type:'category',data:data.years,axisLabel:{rotate:45}},yAxis:{type:'value',name:'平均评分',min:0,max:10},series:[{type:'line',smooth:true,data:data.avg_scores,itemStyle:{color:'#ee6666'},markLine:{data:[{type:'average',name:'平均'}]}}]});
+    window.addEventListener('resize',function(){c1.resize();c2.resize();});
+});
+</script>
+{% endblock %}
+{% block active_menu %}yearly_analysis{% endblock %}

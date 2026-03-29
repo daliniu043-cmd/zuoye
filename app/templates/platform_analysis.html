@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load app_filters %}
+{% block title %}平台分析{% endblock %}
+{% block content %}
+<div class="pagetitle"><h1>游戏平台分析</h1><nav><ol class="breadcrumb"><li class="breadcrumb-item"><a href="{% url 'home' %}">首页</a></li><li class="breadcrumb-item active">平台分析</li></ol></nav></div>
+<section class="section">
+<div class="row">
+<div class="col-lg-7"><div class="card"><div class="card-body"><h5 class="card-title">平台销量排行</h5><div id="platformChart" style="height: 500px;"></div></div></div></div>
+<div class="col-lg-5"><div class="card"><div class="card-body"><h5 class="card-title">平台游戏数量占比</h5><div id="platformPieChart" style="height: 500px;"></div></div></div></div>
+</div></section>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    var data = {{ platform_data|safe }};
+    if(!data.platforms) return;
+    var c1 = echarts.init(document.getElementById('platformChart'));
+    c1.setOption({tooltip:{trigger:'axis',axisPointer:{type:'shadow'}},grid:{left:'3%',right:'4%',bottom:'3%',containLabel:true},xAxis:{type:'value',name:'销量(百万)'},yAxis:{type:'category',data:data.platforms.slice().reverse()},series:[{type:'bar',data:data.total_sales.slice().reverse(),label:{show:true,position:'right'},itemStyle:{color:function(p){var c=['#5470c6','#91cc75','#fac858','#ee6666','#73c0de','#3ba272','#fc8452','#9a60b4','#ea7ccc'];return c[p.dataIndex%c.length];}}}]});
+    var c2 = echarts.init(document.getElementById('platformPieChart'));
+    c2.setOption({tooltip:{trigger:'item',formatter:'{b}: {c}款 ({d}%)'},series:[{type:'pie',radius:['30%','60%'],data:data.platforms.slice(0,12).map(function(p,i){return{name:p,value:data.counts[i]};}),label:{formatter:'{b}\n{d}%'}}]});
+    window.addEventListener('resize',function(){c1.resize();c2.resize();});
+});
+</script>
+{% endblock %}
+{% block active_menu %}platform_analysis{% endblock %}
