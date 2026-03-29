@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load app_filters %}
+{% block title %}情感趋势分析{% endblock %}
+{% block content %}
+<div class="pagetitle"><h1>评论情感趋势分析</h1><nav><ol class="breadcrumb"><li class="breadcrumb-item"><a href="{% url 'home' %}">首页</a></li><li class="breadcrumb-item active">情感趋势分析</li></ol></nav></div>
+<section class="section">
+<div class="row">
+<div class="col-lg-4"><div class="card"><div class="card-body"><h5 class="card-title">情感分布</h5><div id="sentimentPieChart" style="height:350px;"></div><div class="text-center mt-2"><small class="text-muted">已分析评论: {{ total_analyzed_comments }} 条</small></div></div></div></div>
+<div class="col-lg-8"><div class="card"><div class="card-body"><h5 class="card-title">各类型情感对比</h5><div id="genreSentimentChart" style="height:350px;"></div></div></div></div>
+</div>
+<div class="row"><div class="col-lg-12"><div class="card"><div class="card-body"><h5 class="card-title">各游戏类型情感统计</h5>
+<div class="table-responsive"><table class="table table-hover"><thead><tr><th>游戏类型</th><th>评论数</th><th>积极率</th><th>消极率</th></tr></thead>
+<tbody>{% for g in genre_sentiment_list %}<tr><td>{{ g.genre }}</td><td>{{ g.total }}</td><td><span class="badge bg-success">{{ g.positive_rate }}%</span></td><td><span class="badge bg-danger">{{ g.negative_rate }}%</span></td></tr>{% endfor %}</tbody></table></div>
+</div></div></div></div>
+<div class="row"><div class="col-12"><div class="card"><div class="card-body"><h5 class="card-title">情感分析工具</h5>
+<div class="row"><div class="col-md-4">
+<button class="btn btn-primary mb-2" onclick="startAnalysis(false)"><i class="bi bi-play"></i> 分析未处理评论</button>
+<button class="btn btn-warning mb-2" onclick="startAnalysis(true)"><i class="bi bi-arrow-repeat"></i> 全量重新分析</button>
+</div><div class="col-md-8"><div id="analysisProgress" style="display:none;"><div class="progress mb-2"><div class="progress-bar" id="progressBar" role="progressbar" style="width:0%">0%</div></div><p id="progressText" class="text-muted"></p></div></div></div>
+</div></div></div></div>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    var stats = {{ sentiment_stats_json|safe }};
+    if(stats && Object.keys(stats).length){var c1=echarts.init(document.getElementById('sentimentPieChart'));c1.setOption({tooltip:{trigger:'item'},legend:{bottom:0},series:[{type:'pie',radius:['35%','60%'],data:[{name:'积极',value:stats.positive||0,itemStyle:{color:'#28a745'}},{name:'消极',value:stats.negative||0,itemStyle:{color:'#dc3545'}},{name:'中性',value:stats.neutral||0,itemStyle:{color:'#6c757d'}},{name:'未分析',value:stats.unknown||0,itemStyle:{color:'#dee2e6'}}],label:{formatter:'{b}\n{c}条 ({d}%)'}}]});window.addEventListener('resize',function(){c1.resize();});}
+    var gd = {{ genre_chart_data|safe }};
+    if(gd && gd.genres && gd.genres.length){var c2=echarts.init(document.getElementById('genreSentimentChart'));c2.setOption({tooltip:{trigger:'axis'},legend:{data:['积极率','消极率'],bottom:0},grid:{left:'3%',right:'4%',bottom:'12%',containLabel:true},xAxis:{type:'category',data:gd.genres,axisLabel:{rotate:30}},yAxis:{type:'value',name:'百分比(%)',max:100},series:[{name:'积极率',type:'bar',data:gd.positive_rates,itemStyle:{color:'#28a745'}},{name:'消极率',type:'bar',data:gd.negative_rates,itemStyle:{color:'#dc3545'}}]});window.addEventListener('resize',function(){c2.resize();});}
+});
+function startAnalysis(force){document.getElementById('analysisProgress').style.display='block';fetch('/app/api/analyze-sentiment/',{method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':'{{ csrf_token }}'},body:JSON.stringify({force_reanalyze:force})}).then(r=>r.json()).then(d=>{if(d.success){pollProgress(d.task_id);}});}
+function pollProgress(taskId){fetch('/app/api/analyze-sentiment-progress/'+taskId+'/').then(r=>r.json()).then(d=>{if(d.success){var pct=d.total>0?Math.round(d.processed/d.total*100):0;document.getElementById('progressBar').style.width=pct+'%';document.getElementById('progressBar').textContent=pct+'%';document.getElementById('progressText').textContent=d.status;if(!d.completed){setTimeout(function(){pollProgress(taskId);},2000);}else{setTimeout(function(){location.reload();},1500);}}});}
+</script>
+{% endblock %}
+{% block active_menu %}sentiment_trend_analysis{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load app_filters %}
+{% block title %}评论数据{% endblock %}
+{% block content %}
+<div class="pagetitle"><h1>评论数据管理</h1><nav><ol class="breadcrumb"><li class="breadcrumb-item"><a href="{% url 'home' %}">首页</a></li><li class="breadcrumb-item active">评论数据</li></ol></nav></div>
+<section class="section">
+<div class="card"><div class="card-body"><h5 class="card-title">搜索评论</h5>
+<form method="get" class="row g-3">
+<div class="col-md-3"><select name="type" class="form-select"><option value="content" {% if search_type == 'content' %}selected{% endif %}>按内容</option><option value="user_name" {% if search_type == 'user_name' %}selected{% endif %}>按用户名</option><option value="game_name" {% if search_type == 'game_name' %}selected{% endif %}>按游戏名</option><option value="sentiment" {% if search_type == 'sentiment' %}selected{% endif %}>按情感</option></select></div>
+<div class="col-md-6"><input type="text" name="search" class="form-control" placeholder="搜索关键词" value="{{ search_keyword }}"></div>
+<div class="col-md-3"><button type="submit" class="btn btn-primary w-100"><i class="bi bi-search"></i> 搜索</button></div>
+</form></div></div>
+<div class="card"><div class="card-body"><h5 class="card-title">评论列表 <span class="text-muted">(共 {{ page_obj.paginator.count }} 条)</span></h5>
+<div class="table-responsive"><table class="table table-hover"><thead><tr><th>ID</th><th>游戏</th><th>用户</th><th>评论内容</th><th>评分</th><th>情感</th><th>时间</th></tr></thead>
+<tbody>{% for c in page_obj %}<tr>
+<td>{{ c.id }}</td>
+<td>{% if c.game %}<a href="{% url 'game_detail' c.game.id %}">{{ c.game.name|truncatechars:15 }}</a>{% else %}未知{% endif %}</td>
+<td>{{ c.user_name|truncatechars:10 }}</td><td>{{ c.content|truncatechars:50 }}</td>
+<td>{% if c.rating %}<span class="badge bg-warning">{{ c.rating }}</span>{% else %}-{% endif %}</td>
+<td>{% if c.sentiment == 'positive' %}<span class="badge bg-success">积极</span>{% elif c.sentiment == 'negative' %}<span class="badge bg-danger">消极</span>{% elif c.sentiment == 'neutral' %}<span class="badge bg-secondary">中性</span>{% else %}<span class="badge bg-light text-dark">未知</span>{% endif %}</td>
+<td>{{ c.comment_time|default:"-" }}</td></tr>{% empty %}<tr><td colspan="7" class="text-center text-muted py-5">暂无评论</td></tr>{% endfor %}</tbody></table></div>
+{% if page_obj.has_other_pages %}<nav><ul class="pagination justify-content-center">
+{% if page_obj.has_previous %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&search={{ search_keyword }}&type={{ search_type }}">上一页</a></li>{% endif %}
+{% for num in page_obj.paginator.page_range %}{% if page_obj.number == num %}<li class="page-item active"><span class="page-link">{{ num }}</span></li>{% elif num > page_obj.number|add:'-5' and num < page_obj.number|add:'5' %}<li class="page-item"><a class="page-link" href="?page={{ num }}&search={{ search_keyword }}&type={{ search_type }}">{{ num }}</a></li>{% endif %}{% endfor %}
+{% if page_obj.has_next %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&search={{ search_keyword }}&type={{ search_type }}">下一页</a></li>{% endif %}
+</ul></nav>{% endif %}
+</div></div></section>
+{% endblock %}
+{% block active_menu %}comment_data{% endblock %}

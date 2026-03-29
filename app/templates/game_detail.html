@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load app_filters %}
+{% block title %}{{ game.name }} - 游戏详情{% endblock %}
+{% block content %}
+<div class="pagetitle"><h1>游戏详情</h1><nav><ol class="breadcrumb"><li class="breadcrumb-item"><a href="{% url 'home' %}">首页</a></li><li class="breadcrumb-item"><a href="{% url 'game_data' %}">游戏数据</a></li><li class="breadcrumb-item active">{{ game.name|truncatechars:20 }}</li></ol></nav></div>
+<section class="section"><div class="row">
+<div class="col-lg-8"><div class="card"><div class="card-body">
+<h5 class="card-title">{{ game.name }}</h5>
+<div class="row mb-3">
+<div class="col-md-6"><p><strong>平台：</strong>{{ game.platform }}</p><p><strong>类型：</strong><span class="badge bg-info">{{ game.genre }}</span></p><p><strong>发行商：</strong>{{ game.publisher }}</p><p><strong>发行年份：</strong>{{ game.year|default:"-" }}</p><p><strong>发行商国家：</strong>{{ game.publisher_country|default:"-" }}</p></div>
+<div class="col-md-6"><p><strong>全球排名：</strong><span class="badge bg-primary">#{{ game.global_rank }}</span></p><p><strong>评分：</strong>{{ game.score|default:"-" }}/10</p><p><strong>媒体评价：</strong>{{ game.media_review|default:"-" }}</p><p><strong>玩家口碑：</strong>{{ game.player_review|default:"-" }}</p><p><strong>人均时长：</strong>{{ game.avg_playtime|default:"-" }}小时</p></div>
+</div><hr><h6>销售数据</h6>
+<div class="row">
+<div class="col-md-3"><div class="border rounded p-2 text-center"><small class="text-muted">全球总销量</small><h5 class="text-primary mb-0">{{ game.global_sales }}M</h5></div></div>
+<div class="col-md-3"><div class="border rounded p-2 text-center"><small class="text-muted">北美销量</small><h5 class="text-info mb-0">{{ game.na_sales }}M</h5></div></div>
+<div class="col-md-3"><div class="border rounded p-2 text-center"><small class="text-muted">欧洲销量</small><h5 class="text-success mb-0">{{ game.eu_sales }}M</h5></div></div>
+<div class="col-md-3"><div class="border rounded p-2 text-center"><small class="text-muted">日本销量</small><h5 class="text-warning mb-0">{{ game.jp_sales }}M</h5></div></div>
+</div><hr>
+<div class="row mt-2">
+<div class="col-md-4"><p><i class="bi bi-people"></i> 多人模式: {% if game.multiplayer %}支持{% else %}不支持{% endif %}</p></div>
+<div class="col-md-4"><p><i class="bi bi-puzzle"></i> DLC: {% if game.has_dlc %}有{% else %}无{% endif %}</p></div>
+<div class="col-md-4"><p><i class="bi bi-trophy"></i> 获奖: {% if game.is_awarded %}{{ game.award_count }}项{% else %}无{% endif %}</p></div>
+</div>
+<div class="mt-3"><button class="btn {% if is_favorited %}btn-warning{% else %}btn-outline-warning{% endif %}" id="favBtn" onclick="toggleFav()"><i class="bi {% if is_favorited %}bi-star-fill{% else %}bi-star{% endif %}"></i> {% if is_favorited %}已收藏{% else %}收藏{% endif %}</button></div>
+</div></div>
+<div class="card"><div class="card-body"><h5 class="card-title">用户评论 ({{ comment_count }}条)</h5>
+{% for c in comments %}<div class="d-flex mb-3 p-3" style="background:#f8f9fa; border-radius:8px;"><div class="flex-grow-1"><div class="d-flex justify-content-between"><strong>{{ c.user_name }}</strong><small class="text-muted">{{ c.comment_time }}</small></div><p class="mb-1">{{ c.content }}</p><small>{% if c.sentiment == 'positive' %}<span class="badge bg-success">积极</span>{% elif c.sentiment == 'negative' %}<span class="badge bg-danger">消极</span>{% elif c.sentiment == 'neutral' %}<span class="badge bg-secondary">中性</span>{% endif %} {% if c.rating %}<span class="badge bg-warning">{{ c.rating }}分</span>{% endif %}</small></div></div>{% empty %}<p class="text-muted text-center py-4">暂无评论</p>{% endfor %}
+</div></div></div>
+<div class="col-lg-4"><div class="card"><div class="card-body"><h5 class="card-title">同类型推荐</h5>
+{% for sg in similar_games %}<div class="d-flex align-items-center p-2 mb-2" style="background:#f8f9fa; border-radius:6px;"><div class="flex-grow-1"><a href="{% url 'game_detail' sg.id %}" style="font-weight:600; text-decoration:none; color:inherit;">{{ sg.name|truncatechars:20 }}</a><div style="font-size:12px; color:#6c757d;">{{ sg.platform }} | {{ sg.global_sales }}M</div></div></div>{% empty %}<p class="text-muted">暂无推荐</p>{% endfor %}
+</div></div></div></div></section>
+<script>
+function toggleFav(){
+    fetch('/app/api/toggle-favorite/',{method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':'{{ csrf_token }}'},body:JSON.stringify({game_id:{{ game.id }}})}).then(r=>r.json()).then(d=>{if(d.success)location.reload();});
+}
+</script>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load app_filters %}
+{% block title %}发行商分析{% endblock %}
+{% block content %}
+<div class="pagetitle"><h1>发行商分析</h1><nav><ol class="breadcrumb"><li class="breadcrumb-item"><a href="{% url 'home' %}">首页</a></li><li class="breadcrumb-item active">发行商分析</li></ol></nav></div>
+<section class="section">
+<div class="row"><div class="col-lg-12"><div class="card"><div class="card-body"><h5 class="card-title">发行商销量排行 TOP25</h5><div id="publisherChart" style="height: 500px;"></div></div></div></div></div>
+<div class="row">
+<div class="col-lg-6"><div class="card"><div class="card-body"><h5 class="card-title">发行商游戏数量TOP10</h5><div id="pubCountChart" style="height: 400px;"></div></div></div></div>
+<div class="col-lg-6"><div class="card"><div class="card-body"><h5 class="card-title">发行商平均评分TOP15</h5><div id="pubScoreChart" style="height: 400px;"></div></div></div></div>
+</div></section>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    var data = {{ publisher_data|safe }};
+    if(!data.publishers) return;
+    var c1 = echarts.init(document.getElementById('publisherChart'));
+    c1.setOption({tooltip:{trigger:'axis',axisPointer:{type:'shadow'}},grid:{left:'3%',right:'4%',bottom:'12%',containLabel:true},xAxis:{type:'category',data:data.publishers,axisLabel:{rotate:35,interval:0}},yAxis:{type:'value',name:'总销量(百万)'},series:[{type:'bar',data:data.total_sales,label:{show:true,position:'top'},itemStyle:{color:function(p){var c=['#5470c6','#91cc75','#fac858','#ee6666','#73c0de','#3ba272','#fc8452','#9a60b4'];return c[p.dataIndex%c.length];}}}]});
+    var c2 = echarts.init(document.getElementById('pubCountChart'));
+    c2.setOption({tooltip:{trigger:'item'},series:[{type:'pie',radius:'65%',data:data.publishers.slice(0,10).map(function(p,i){return{name:p,value:data.game_counts[i]};}),label:{formatter:'{b}\n{c}款'}}]});
+    var c3 = echarts.init(document.getElementById('pubScoreChart'));
+    c3.setOption({tooltip:{trigger:'axis'},grid:{left:'3%',right:'4%',bottom:'12%',containLabel:true},xAxis:{type:'category',data:data.publishers.slice(0,15),axisLabel:{rotate:35}},yAxis:{type:'value',name:'平均评分'},series:[{type:'bar',data:data.avg_scores.slice(0,15),itemStyle:{color:'#91cc75'}}]});
+    window.addEventListener('resize',function(){c1.resize();c2.resize();c3.resize();});
+});
+</script>
+{% endblock %}
+{% block active_menu %}publisher_analysis{% endblock %}

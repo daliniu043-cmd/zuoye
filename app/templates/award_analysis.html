@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load app_filters %}
+{% block title %}获奖分析{% endblock %}
+{% block content %}
+<div class="pagetitle"><h1>获奖游戏分析</h1><nav><ol class="breadcrumb"><li class="breadcrumb-item"><a href="{% url 'home' %}">首页</a></li><li class="breadcrumb-item active">获奖分析</li></ol></nav></div>
+<section class="section"><div class="row">
+<div class="col-lg-5"><div class="card"><div class="card-body"><h5 class="card-title">获奖 vs 未获奖对比</h5><div id="awardCompareChart" style="height: 380px;"></div></div></div></div>
+<div class="col-lg-7"><div class="card"><div class="card-body"><h5 class="card-title">获奖游戏类型分布</h5><div id="awardGenreChart" style="height: 380px;"></div></div></div></div>
+</div></section>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    var data = {{ award_data|safe }};
+    var as = data.awarded_stats||{};
+    if(as.awarded){var c1=echarts.init(document.getElementById('awardCompareChart'));c1.setOption({tooltip:{trigger:'axis'},legend:{bottom:0},xAxis:{type:'category',data:['游戏数量','平均销量(M)','平均评分']},yAxis:{type:'value'},series:[{name:'获奖',type:'bar',data:[as.awarded.count,as.awarded.avg_sales,as.awarded.avg_score],itemStyle:{color:'#fac858'}},{name:'未获奖',type:'bar',data:[as.not_awarded.count,as.not_awarded.avg_sales,as.not_awarded.avg_score],itemStyle:{color:'#73c0de'}}]});window.addEventListener('resize',function(){c1.resize();});}
+    var bg = data.awarded_by_genre||[];
+    if(bg.length){var c2=echarts.init(document.getElementById('awardGenreChart'));c2.setOption({tooltip:{trigger:'axis',axisPointer:{type:'shadow'}},grid:{left:'3%',right:'4%',bottom:'3%',containLabel:true},xAxis:{type:'value'},yAxis:{type:'category',data:bg.map(function(g){return g.genre;}).reverse()},series:[{type:'bar',data:bg.map(function(g){return g.count;}).reverse(),label:{show:true,position:'right'},itemStyle:{color:'#fac858'}}]});window.addEventListener('resize',function(){c2.resize();});}
+});
+</script>
+{% endblock %}
+{% block active_menu %}award_analysis{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load app_filters %}
+{% block title %}游戏类型分析{% endblock %}
+{% block content %}
+<div class="pagetitle"><h1>游戏类型分析</h1><nav><ol class="breadcrumb"><li class="breadcrumb-item"><a href="{% url 'home' %}">首页</a></li><li class="breadcrumb-item active">游戏类型分析</li></ol></nav></div>
+<section class="section">
+<div class="row">
+<div class="col-lg-7"><div class="card"><div class="card-body"><h5 class="card-title">游戏类型销量分布</h5><div id="genreChart" style="height: 420px;"></div></div></div></div>
+<div class="col-lg-5"><div class="card"><div class="card-body"><h5 class="card-title">类型数量饼图</h5><div id="genrePieChart" style="height: 420px;"></div></div></div></div>
+</div>
+<div class="row"><div class="col-lg-12"><div class="card"><div class="card-body"><h5 class="card-title">各类型平均评分对比</h5><div id="genreScoreChart" style="height: 350px;"></div></div></div></div></div>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    var data = {{ genre_data|safe }};
+    if(!data.genres) return;
+    var c1 = echarts.init(document.getElementById('genreChart'));
+    c1.setOption({tooltip:{trigger:'axis',axisPointer:{type:'shadow'}},grid:{left:'3%',right:'4%',bottom:'3%',containLabel:true},xAxis:{type:'value',name:'销量(百万)'},yAxis:{type:'category',data:data.genres.slice().reverse()},series:[{type:'bar',data:data.total_sales.slice().reverse(),label:{show:true,position:'right'},itemStyle:{color:function(p){var c=['#5470c6','#91cc75','#fac858','#ee6666','#73c0de','#3ba272','#fc8452','#9a60b4','#ea7ccc'];return c[p.dataIndex%c.length];}}}]});
+    var c2 = echarts.init(document.getElementById('genrePieChart'));
+    c2.setOption({tooltip:{trigger:'item',formatter:'{b}: {c}款 ({d}%)'},series:[{type:'pie',radius:['35%','65%'],data:data.genres.map(function(g,i){return{name:g,value:data.counts[i]};}),label:{formatter:'{b}\n{d}%'}}]});
+    var c3 = echarts.init(document.getElementById('genreScoreChart'));
+    c3.setOption({tooltip:{trigger:'axis'},grid:{left:'3%',right:'4%',bottom:'12%',containLabel:true},xAxis:{type:'category',data:data.genres,axisLabel:{rotate:30}},yAxis:{type:'value',name:'平均评分',min:0,max:10},series:[{type:'bar',data:data.avg_scores,itemStyle:{color:'#fac858'},label:{show:true,position:'top'}}]});
+    window.addEventListener('resize',function(){c1.resize();c2.resize();c3.resize();});
+});
+</script>
+{% endblock %}
+{% block active_menu %}genre_analysis{% endblock %}

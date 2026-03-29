@@ -1,0 +1,4 @@
+django>=4.2
+jieba>=0.42
+numpy>=1.24
+openpyxl>=3.1

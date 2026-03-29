@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>错误提示</title>
+  <link href="/static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/static/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body { background-color: #f6f9ff; }
+    .error-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .error-card {
+      text-align: center;
+      padding: 40px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 5px 20px rgba(0,0,0,.1);
+      max-width: 500px;
+    }
+    .error-card i {
+      font-size: 64px;
+      color: #e74c3c;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="error-container">
+    <div class="error-card">
+      <i class="bi bi-exclamation-triangle"></i>
+      <h3>{{ errorMsg|default:"出错了" }}</h3>
+      <p class="text-muted mt-3">请检查操作后重试</p>
+      <a href="javascript:history.back()" class="btn btn-primary mt-3">返回上一页</a>
+      <a href="/app/home/" class="btn btn-outline-secondary mt-3 ms-2">返回首页</a>
+    </div>
+  </div>
+</body>
+</html>

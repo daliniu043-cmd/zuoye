@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>注册 - 游戏销售数据可视化分析系统</title>
+  <link href="/static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/static/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="/static/css/style.css" rel="stylesheet">
+  <style>
+    body { background-color: #f6f9ff; }
+    .register-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .register-card {
+      width: 100%;
+      max-width: 420px;
+      padding: 30px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 5px 20px rgba(0,0,0,.1);
+    }
+    .register-card h3 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #012970;
+    }
+    .register-card .logo {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .register-card .logo i {
+      font-size: 48px;
+      color: #4154f1;
+    }
+  </style>
+</head>
+<body>
+  <div class="register-container">
+    <div class="register-card">
+      <div class="logo">
+        <i class="bi bi-bar-chart-line"></i>
+      </div>
+      <h3>用户注册</h3>
+      <form method="post" action="{% url 'register' %}">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="username" class="form-label">用户名</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-person"></i></span>
+            <input type="text" class="form-control" id="username" name="username" placeholder="请输入用户名" required>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label">密码</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+            <input type="password" class="form-control" id="password" name="password" placeholder="请输入密码" required>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="confirmPassword" class="form-label">确认密码</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="请再次输入密码" required>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary w-100 mt-2">注 册</button>
+        <div class="text-center mt-3">
+          <span>已有账号？</span>
+          <a href="{% url 'login' %}">立即登录</a>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
